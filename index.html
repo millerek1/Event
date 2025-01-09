@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Konwerter</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+            max-width: 800px;
+            width: 90%;
+        }
+        textarea {
+            width: 100%;
+            margin-top: 10px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        img {
+            max-width: 100px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>JSON Konwerter</h1>
+        <textarea id="inputJSON" placeholder="Wklej swój JSON tutaj..." rows="15" cols="70"></textarea>
+        <br>
+        <button onclick="convertJSON()">Konwertuj</button>
+        <h2>Wynik:</h2>
+        <textarea id="outputJSON" rows="15" cols="70" readonly></textarea>
+    </div>
+
+    <script>
+        function convertJSON() {
+            let input = document.getElementById('inputJSON').value;
+            try {
+                let inputData = JSON.parse(input);
+                if (inputData.Objects && Array.isArray(inputData.Objects)) {
+                    let vehicles = [];
+                    let position = null;
+
+                    inputData.Objects.forEach(item => {
+                        if (item.name === "WoodenCrate") {
+                            position = item.pos;
+                        } else {
+                            vehicles.push({
+                                "VehicleType": item.name,
+                                "Position": item.pos,
+                                "Orientation": item.ypr
+                            });
+                        }
+                    });
+
+                    if (position === null) {
+                        document.getElementById('outputJSON').value = "Błąd: brak pozycji WoodenCrate w danych wejściowych.";
+                        return;
+                    }
+
+                    let outputData = {
+                        "Position": position,
+                        "Vehicles": vehicles,
+                        "ZombiesToReward": [
+                            "ZmbM_HeavyIndustryWorker"
+                        ],
+                        "ExpansionAIBots": [],
+                        "AIBotsEquipment": [],
+                        "ExpansionAiBotsToReward": 0,
+                        "RewardCrate": "CERewardCrate_Black",
+                        "DeleteRewardOnCompletion": 1,
+                        "RewardCratePosition": position,
+                        "RewardCrateOrientation": [
+                            -108.0,
+                            0.0,
+                            0.0
+                        ],
+                        "FixedRewardItems": [
+                            "AKM",
+                            "M4A1"
+                        ],
+                        "RewardItemSets": [
+                            "MilitaryWeapons",
+                            "AmmoAndSupplies"
+                        ],
+                        "GeneralZombies": [
+                            "ZmbM_ConstrWorkerNormal_Beige",
+                            "ZmbM_ConstrWorkerNormal_Black",
+                            "ZmbM_ConstrWorkerNormal_Green",
+                            "ZmbM_ConstrWorkerNormal_Grey",
+                            "ZmbM_HandymanNormal_Green",
+                            "ZmbM_HandymanNormal_Blue",
+                            "ZmbM_HandymanNormal_Beige"
+                        ],
+                        "ZombieSpawnRadius": 20,
+                        "TimeToComplete": 25,
+                        "Notification": 1,
+                        "NotificationMessage": "Beware: Svetlojarsk Construction Zone Overrun by Zombies!",
+                        "NotificationIcon": "CustomEvent/layouts/icons/Supply2.edds",
+                        "NotificationBackground": "CustomEvent/layouts/NotifiSupplies.edds",
+                        "MarkOnMap": 1,
+                        "MarkIcon": "CustomEvent\\data\\MarkSupply.paa",
+                        "ShowMarkName": 1,
+                        "MarkName": "Construction Event",
+                        "PlayerDistanceToSpawnZombies": 500,
+                        "Zone": {
+                            "ActiveZone": 1,
+                            "ZoneRadius": 200.0,
+                            "ZoneName": "Svetlojarsk Construction"
+                        },
+                        "GenerateContaminatedArea": 0,
+                        "ContaminatedAreaRadius": 50
+                    };
+
+                    document.getElementById('outputJSON').value = JSON.stringify(outputData, null, 4);
+                } else {
+                    document.getElementById('outputJSON').value = "Wprowadzony JSON nie zawiera prawidłowej tablicy `Objects`.";
+                }
+            } catch (e) {
+                document.getElementById('outputJSON').value = "Błąd podczas przetwarzania JSON: " + e.message;
+            }
+        }
+    </script>
+</body>
+</html>
